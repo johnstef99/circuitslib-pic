@@ -1,0 +1,115 @@
+.ps 8
+padding=0.2
+
+define r {
+  textpad=0.15
+  if "$3"!="" then {textpad=textpad+$3}
+  if "$1"=="u" then {
+    line up padding
+    for i = 0 to 2 do {
+      line left 0.05 up 0.02 then right 0.1 up 0.04 then left 0.05 up 0.02
+    }
+    move down 0.12 right textpad "$2"; move left textpad up 0.12
+    line up padding
+  }
+  if "$1"=="d" then {
+    move down padding*2+0.02*4*3
+    line up padding
+    for i = 0 to 2 do {
+      line left 0.05 up 0.02 then right 0.1 up 0.04 then left 0.05 up 0.02
+    }
+    move down 0.12 right textpad "$2"; move left textpad up 0.12
+    line up padding
+    move down padding*2+0.02*4*3
+  }
+  if "$1"=="l" then {
+    move left padding*2+0.02*4*3
+    line right padding
+    for i = 0 to 2 do {
+      line up 0.05 right 0.02 then down 0.1 right 0.04 then up 0.05 right 0.02
+    }
+    move left 0.12 up 0.12 "$2"; move down 0.12 right 0.12
+    line right padding
+    move left padding*2+0.02*4*3
+  }
+  if "$1"=="" || "$1"=="r" then {
+    line right padding
+    for i = 0 to 2 do {
+      line up 0.05 right 0.02 then down 0.1 right 0.04 then up 0.05 right 0.02
+    }
+    move left 0.12 up 0.12 "$2"; move down 0.12 right 0.12
+    line right padding
+  }
+}
+
+define p {
+  circle radius 0.0175 fill 1
+  "$1" above at last circle .n
+  " $2" ljust at last circle .e
+  "$3" below at last circle .s
+  "$4 " rjust at last circle .w
+  move to last circle
+}
+
+define wire {
+  if "$1"=="r" then {
+    line right padding
+  }
+  if "$1"=="l" then {
+    line left padding
+  }
+  if "$1"=="d" then {
+    line down padding
+  }
+  if "$1"=="u" then {
+    line up padding
+  }
+  if "$1"=="" then {
+    line padding
+  }
+  if "$2"!="" then {
+    line $2
+  }
+}
+
+define ground {
+  padding = padding/10
+  if "$1"=="r" || "$1"=="" then {
+    line right padding
+    circle radius 0.01 fill 1
+    move up 0.1
+    line down 0.2
+    move up 0.05 right 0.03
+    line up 0.1
+    move to last circle
+  }
+  if "$1"=="l" then {
+    line left padding
+    circle radius 0.01 fill 1
+    move up 0.1
+    line down 0.2
+    move up 0.05 left 0.03
+    line up 0.1
+    move to last circle
+  }
+  if "$1"=="d" then {
+    line down padding
+    circle radius 0.01 fill 1
+    move left 0.1
+    line right 0.2
+    move left 0.05 down 0.03
+    line left 0.1
+    move to last circle
+  }
+  if "$1"=="u" then {
+    line up padding
+    circle radius 0.01 fill 1
+    move left 0.1
+    line right 0.2
+    move left 0.05 up 0.03
+    line left 0.1
+    move to last circle
+  }
+  padding = padding*10
+}
+.ps 10
