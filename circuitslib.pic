@@ -1,47 +1,59 @@
-.ps 8
+#init padding values
 padding=0.2
+textpad=0.12
 
-define r {
-  textpad=0.15
-  if "$3"!="" then {textpad=textpad+$3}
-  if "$1"=="u" then {
-    line up padding
-    for i = 0 to 2 do {
-      line left 0.05 up 0.02 then right 0.1 up 0.04 then left 0.05 up 0.02
-    }
-    move down 0.12 right textpad "$2"; move left textpad up 0.12
-    line up padding
+# function to translate directions
+# $1 direction (r(ight),d(own),l(eft),u(p))
+define direction {
+  if "$1"=="r" || "$1"=="" then {
+    define forwards % right %
+    define backwards % left %
+    define upwards % up %
+    define downwards % down %
   }
   if "$1"=="d" then {
-    move down padding*2+0.02*4*3
-    line up padding
-    for i = 0 to 2 do {
-      line left 0.05 up 0.02 then right 0.1 up 0.04 then left 0.05 up 0.02
-    }
-    move down 0.12 right textpad "$2"; move left textpad up 0.12
-    line up padding
-    move down padding*2+0.02*4*3
+    define forwards % down %
+    define backwards % up %
+    define upwards % right %
+    define downwards % left %
   }
   if "$1"=="l" then {
-    move left padding*2+0.02*4*3
-    line right padding
-    for i = 0 to 2 do {
-      line up 0.05 right 0.02 then down 0.1 right 0.04 then up 0.05 right 0.02
-    }
-    move left 0.12 up 0.12 "$2"; move down 0.12 right 0.12
-    line right padding
-    move left padding*2+0.02*4*3
+    define forwards % left %
+    define backwards % right %
+    define upwards % up %
+    define downwards % down %
   }
-  if "$1"=="" || "$1"=="r" then {
-    line right padding
-    for i = 0 to 2 do {
-      line up 0.05 right 0.02 then down 0.1 right 0.04 then up 0.05 right 0.02
-    }
-    move left 0.12 up 0.12 "$2"; move down 0.12 right 0.12
-    line right padding
+  if "$1"=="u" then {
+    define forwards % up %
+    define backwards % down %
+    define upwards % left %
+    define downwards % right %
+  }
+  if "$2"=="d" then {
+    define textwards % downwards %
+  } else {
+    define textwards % upwards %
   }
 }
 
+# $1 direction
+# $2 text
+# $3 text position
+define r {
+  direction($1,$3)
+  line forwards padding
+  for i = 0 to 2 do {
+    line upwards 0.05 forwards 0.02 then downwards 0.1 forwards 0.04 then upwards 0.05 forwards 0.02
+  }
+  move backwards 0.12 textwards textpad "$2"; move textwards -textpad forwards 0.12
+  line forwards padding
+
+}
+
+# $1 up text
+# $2 right text
+# $3 down text
+# $4 left text
 define p {
   circle radius 0.0175 fill 1
   "$1" above at last circle .n
@@ -51,19 +63,12 @@ define p {
   move to last circle
 }
 
+# $1 direction
+# $2 extra length
+# default length is the padding value
 define wire {
-  if "$1"=="r" then {
-    line right padding
-  }
-  if "$1"=="l" then {
-    line left padding
-  }
-  if "$1"=="d" then {
-    line down padding
-  }
-  if "$1"=="u" then {
-    line up padding
-  }
+  direction($1)
+  line forwards padding
   if "$1"=="" then {
     line padding
   }
@@ -72,44 +77,73 @@ define wire {
   }
 }
 
+# $1 direction
 define ground {
+  direction($1)
   padding = padding/10
-  if "$1"=="r" || "$1"=="" then {
-    line right padding
-    circle radius 0.01 fill 1
-    move up 0.1
-    line down 0.2
-    move up 0.05 right 0.03
-    line up 0.1
-    move to last circle
-  }
-  if "$1"=="l" then {
-    line left padding
-    circle radius 0.01 fill 1
-    move up 0.1
-    line down 0.2
-    move up 0.05 left 0.03
-    line up 0.1
-    move to last circle
-  }
-  if "$1"=="d" then {
-    line down padding
-    circle radius 0.01 fill 1
-    move left 0.1
-    line right 0.2
-    move left 0.05 down 0.03
-    line left 0.1
-    move to last circle
-  }
-  if "$1"=="u" then {
-    line up padding
-    circle radius 0.01 fill 1
-    move left 0.1
-    line right 0.2
-    move left 0.05 up 0.03
-    line left 0.1
-    move to last circle
-  }
+  line forwards padding
+  circle radius 0.01 fill 1
+  move upwards 0.1
+  line downwards 0.2
+  move upwards 0.15 forwards 0.03
+  line downwards 0.1
+  move upwards 0.075 forwards 0.03
+  line downwards 0.05
+  move to last circle
   padding = padding*10
 }
-.ps 10
+
+# $1 direction
+# $2 text
+# $3 text position
+define cup {
+# increase textpad for the cup
+  textpad=textpad+0.03
+  direction($1,$3)
+  line forwards padding
+  move upwards 0.1
+  line downwards 0.2
+# centering - printing text
+  move forwards 0.015 upwards 0.1
+  move textwards textpad "$2"; move textwards -textpad
+  move forwards 0.015 downwards 0.1
+# continue with the cup
+  line upwards 0.2
+  move downwards 0.1
+  line forwards padding
+# reset textpad
+  textpad=textpad-0.03
+}
+
+
+# $1 direction
+# $2 text
+# $3 text position
+define bat {
+  direction($1,$3)
+  textpad=textpad+0.03
+# big line
+  line forwards padding
+  move upwards 0.1
+  line downwards 0.2
+# centering to put text
+  move upwards 0.1 forwards 0.015
+  move textwards textpad "$2"
+  move textwards -textpad
+  move downwards 0.1forwards 0.015
+#small line
+  move upwards 0.05
+  line upwards 0.1
+  move downwards 0.05
+  line forwards padding
+  textpad=textpad-0.03
+}
+
+define switch {
+  switch_size=0.15
+  direction($1)
+  line forwards padding
+  line forwards switch_size upwards 0.075
+  move downwards 0.075
+  line forwards padding
+}
